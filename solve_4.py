@@ -4,6 +4,7 @@
     passes pylint
 '''
 
+import re
 import sys
 
 IN_FILE="4_input.txt"
@@ -48,14 +49,17 @@ def main():
                     print('Error, line %d is unexpectedly blank at state %d' % (line_number, state, ))
                     sys.exit(1)
                 else:
-                    row_array = input_line.split(' ')
+                    # a leading space confuses re.split
+                    if input_line[0] == ' ':
+                        row_array = re.split(' +', input_line[1:])
+                    else:
+                        row_array = re.split(' +', input_line)
+
                     #print("card number %d, card_row %s" % (card_number, ';'.join(row_array)))
                     for i in range(c_cols):
-                        value = row_array[i]
-                        if value == '':
-                            value = -1
-                        #print("card number %d, card_row %d, card col %d, value %d" % (card_number, card_row, i, int(value), ))
-                        card[card_number][card_row][i] = int(value)
+                        value = int(row_array[i])
+                        #print("card number %d, card_row %d, card col %d, value %d" % (card_number, card_row, i, value, ))
+                        card[card_number][card_row][i] = value
                     card_row += 1
 
                 # next card?
@@ -71,14 +75,19 @@ def main():
     print("cards %d" % (card_number, ))
     print("bingo_numbers = %s" % (', '.join(bingo_numbers)))
 
-
-    for cn in range(c_count):
+    # print the cards to show we captured them
+    if False:
+    #for cn in range(c_count):
         print("card %d: " % (cn, ))
         for cr in range(c_rows):
             for cc in range(c_cols):
                 print("%d " % (card[cn][cr][cc], ), end='')
             print('')
         print('')
+
+    for bc in range(len(bingo_numbers)):
+        bn = int(bingo_numbers[bc])
+        print('calling bn %d value %d' % (bc, bn, ))
 
 ################################################################################
 main()
